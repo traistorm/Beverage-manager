@@ -55,7 +55,7 @@ public class RestAPI {
     public ResponseEntity<ProductDTO> getProducts(@RequestParam(name = "token", required = false) String token,
                                                   @RequestParam(name = "page", required = false) Integer page,
                                                   @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage,
-                                                  @RequestParam(name = "sortby", required = false) String sortBy) {
+                                                  @RequestParam(name = "sortBy", required = false) String sortBy) {
         Date date = new Date();
         System.out.println(date.getTime());
         return productService.findAll(token, page, itemPerPage, sortBy);
