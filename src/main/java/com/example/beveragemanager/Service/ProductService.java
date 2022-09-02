@@ -36,51 +36,49 @@ public class ProductService {
                 {
                     if (sortBy != null)
                     {
-                        switch (sortBy) {
-                            case "priceAsc" -> {
-                                List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productprice").ascending())).getContent();
-                                //productDTO.setMaxPage(productList.size());
-                                HeaderReturnMix info = new HeaderReturnMix();
-                                info.setMaxPage(productRepository.findAll().size());
-                                info.setCurrentPage(page);
-                                info.setItemPerPage(itemPerPage);
-                                productDTO.setInfo(info);
-                                productDTO.setProductList(productListReturn);
-                                break;
-                            }
-                            case "priceDes" -> {
-                                List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productprice").descending())).getContent();
-                                //productDTO.setMaxPage(productList.size());
-                                HeaderReturnMix info = new HeaderReturnMix();
-                                info.setMaxPage(productRepository.findAll().size());
-                                info.setCurrentPage(page);
-                                info.setItemPerPage(itemPerPage);
-                                productDTO.setInfo(info);
-                                productDTO.setProductList(productListReturn);
-                                break;
-                            }
-                            case "discount" -> {
-                                List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("discount").ascending())).getContent();
-                                //productDTO.setMaxPage(productList.size());
-                                HeaderReturnMix info = new HeaderReturnMix();
-                                info.setMaxPage(productRepository.findAll().size());
-                                info.setCurrentPage(page);
-                                info.setItemPerPage(itemPerPage);
-                                productDTO.setInfo(info);
-                                productDTO.setProductList(productListReturn);
-                                break;
-                            }
-                            default -> {
-                                List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending())).getContent();
-                                //productDTO.setMaxPage(productList.size());
-                                HeaderReturnMix info = new HeaderReturnMix();
-                                info.setMaxPage(productRepository.findAll().size());
-                                info.setCurrentPage(page);
-                                info.setItemPerPage(itemPerPage);
-                                productDTO.setInfo(info);
-                                productDTO.setProductList(productListReturn);
-                                break;
-                            }
+                        if (sortBy.equals("priceAsc"))
+                        {
+                            List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productprice").ascending())).getContent();
+                            //productDTO.setMaxPage(productList.size());
+                            HeaderReturnMix info = new HeaderReturnMix();
+                            info.setMaxPage(productRepository.findAll().size());
+                            info.setCurrentPage(page);
+                            info.setItemPerPage(itemPerPage);
+                            productDTO.setInfo(info);
+                            productDTO.setProductList(productListReturn);
+                        }
+                        else if (sortBy.equals("priceDes"))
+                        {
+                            List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productprice").descending())).getContent();
+                            //productDTO.setMaxPage(productList.size());
+                            HeaderReturnMix info = new HeaderReturnMix();
+                            info.setMaxPage(productRepository.findAll().size());
+                            info.setCurrentPage(page);
+                            info.setItemPerPage(itemPerPage);
+                            productDTO.setInfo(info);
+                            productDTO.setProductList(productListReturn);
+                        }
+                        else if (sortBy.equals("discount"))
+                        {
+                            List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("discount").ascending())).getContent();
+                            //productDTO.setMaxPage(productList.size());
+                            HeaderReturnMix info = new HeaderReturnMix();
+                            info.setMaxPage(productRepository.findAll().size());
+                            info.setCurrentPage(page);
+                            info.setItemPerPage(itemPerPage);
+                            productDTO.setInfo(info);
+                            productDTO.setProductList(productListReturn);
+                        }
+                        else
+                        {
+                            List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending())).getContent();
+                            //productDTO.setMaxPage(productList.size());
+                            HeaderReturnMix info = new HeaderReturnMix();
+                            info.setMaxPage(productRepository.findAll().size());
+                            info.setCurrentPage(page);
+                            info.setItemPerPage(itemPerPage);
+                            productDTO.setInfo(info);
+                            productDTO.setProductList(productListReturn);
                         }
 
                     }
