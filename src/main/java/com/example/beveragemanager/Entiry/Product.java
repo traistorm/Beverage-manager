@@ -17,4 +17,5 @@ public class Product {
     private Integer remainingamount;
     private Float discount; // %
     private String description;
+    private String imagelink;
 }
