@@ -27,8 +27,12 @@ public class RestAPI {
     @Autowired
     BillProductService billProductService;
 
-    @GetMapping("/bills")
+    @GetMapping("/test")
 
+    public String test() {
+        return "Test success";
+    }
+    @GetMapping("/bills")
     public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
                                             @RequestParam(name = "page", required = false) Integer page,
                                             @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
