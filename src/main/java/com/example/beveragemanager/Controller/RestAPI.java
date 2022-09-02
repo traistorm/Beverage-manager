@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/v1")
 public class RestAPI {
     @Autowired
