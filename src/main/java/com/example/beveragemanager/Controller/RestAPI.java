@@ -1,14 +1,11 @@
 package com.example.beveragemanager.Controller;
 
 import com.example.beveragemanager.DTO.*;
-import com.example.beveragemanager.Entiry.Bill;
-import com.example.beveragemanager.Entiry.BillProduct;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @RestController
@@ -74,9 +71,9 @@ public class RestAPI {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<UserDTOReturnClinet> getUsers(@RequestParam(name = "token", required = false) String token,
-                                            @RequestParam(name = "page", required = false) Integer page,
-                                            @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
+    public ResponseEntity<UserDTOReturnClient> getUsers(@RequestParam(name = "token", required = false) String token,
+                                                        @RequestParam(name = "page", required = false) Integer page,
+                                                        @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
         Date date = new Date();
         System.out.println(date.getTime());
         return userService.findAll(token, page, itemPerPage);

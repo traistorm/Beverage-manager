@@ -1,9 +1,7 @@
 package com.example.beveragemanager.Service;
 
-import com.example.beveragemanager.DTO.StaffDTO;
 import com.example.beveragemanager.DTO.UserDTO;
-import com.example.beveragemanager.DTO.UserDTOReturnClinet;
-import com.example.beveragemanager.Entiry.Staff;
+import com.example.beveragemanager.DTO.UserDTOReturnClient;
 import com.example.beveragemanager.Entiry.User;
 import com.example.beveragemanager.EntityMix.HeaderReturnMix;
 import com.example.beveragemanager.Reponsitory.UserRepository;
@@ -88,14 +86,14 @@ public class UserService {
         return userDTO;
 
     }
-    public ResponseEntity<UserDTOReturnClinet> findAll(String token, Integer page, Integer itemPerPage)
+    public ResponseEntity<UserDTOReturnClient> findAll(String token, Integer page, Integer itemPerPage)
     {
         try
         {
             UserDTO userDTO = login(null, null, token);
             if (userDTO.getResult().equals("Token is valid"))
             {
-                UserDTOReturnClinet userDTOReturnClinet = new UserDTOReturnClinet();
+                UserDTOReturnClient userDTOReturnClient = new UserDTOReturnClient();
                 List<User> userList = userRepository.findAll();
                 if (page != null && itemPerPage != null)
                 {
@@ -104,8 +102,8 @@ public class UserService {
                     info.setMaxPage((int) ((userRepository.findAll().size() / itemPerPage) + 1));
                     info.setCurrentPage(page);
                     info.setItemPerPage(itemPerPage);
-                    userDTOReturnClinet.setInfo(info);
-                    userDTOReturnClinet.setUserList(userListReturn);
+                    userDTOReturnClient.setInfo(info);
+                    userDTOReturnClient.setUserList(userListReturn);
                 }
                 else
                 {
@@ -113,10 +111,10 @@ public class UserService {
                     info.setMaxPage(null);
                     info.setCurrentPage(null);
                     info.setItemPerPage(null);
-                    userDTOReturnClinet.setInfo(info);
-                    userDTOReturnClinet.setUserList(userList);
+                    userDTOReturnClient.setInfo(info);
+                    userDTOReturnClient.setUserList(userList);
                 }
-                return new ResponseEntity<>(userDTOReturnClinet, HttpStatus.OK);
+                return new ResponseEntity<>(userDTOReturnClient, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {
