@@ -8,6 +8,7 @@ import com.example.beveragemanager.Reponsitory.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,7 +100,7 @@ public class UserService {
                 {
                     List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
                     HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage((int) ((userRepository.findAll().size() / itemPerPage) + 1));
+                    info.setMaxPage((int) ((userRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                     info.setCurrentPage(page);
                     info.setItemPerPage(itemPerPage);
                     userDTOReturnClient.setInfo(info);

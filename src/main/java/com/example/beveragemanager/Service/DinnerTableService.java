@@ -36,7 +36,7 @@ public class DinnerTableService {
                 {
                     List<DinnerTable> dinnerTableListReturn = dinnerTableReponsitory.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("dinnertableid").ascending())).getContent();
                     HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage(dinnerTableReponsitory.findAll(Pageable.unpaged()).getContent().size());
+                    info.setMaxPage((int) ((dinnerTableReponsitory.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                     info.setCurrentPage(page);
                     info.setItemPerPage(itemPerPage);
                     dinnerTableDTO.setInfo(info);

@@ -36,7 +36,7 @@ public class StaffService {
                 {
                     List<Staff> staffListReturn = staffRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("staffid").ascending())).getContent();
                     HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage(staffRepository.findAll(Pageable.unpaged()).getContent().size());
+                    info.setMaxPage((int) ((staffRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                     info.setCurrentPage(page);
                     info.setItemPerPage(itemPerPage);
                     staffDTO.setInfo(info);
