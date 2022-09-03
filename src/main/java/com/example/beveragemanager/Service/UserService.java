@@ -2,8 +2,10 @@ package com.example.beveragemanager.Service;
 
 import com.example.beveragemanager.DTO.StaffDTO;
 import com.example.beveragemanager.DTO.UserDTO;
+import com.example.beveragemanager.DTO.UserDTOReturnClinet;
 import com.example.beveragemanager.Entiry.Staff;
 import com.example.beveragemanager.Entiry.User;
+import com.example.beveragemanager.EntityMix.HeaderReturnMix;
 import com.example.beveragemanager.Reponsitory.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,27 +88,35 @@ public class UserService {
         return userDTO;
 
     }
-    public ResponseEntity<UserDTO> findAll(String token, Integer page, Integer itemPerPage)
+    public ResponseEntity<UserDTOReturnClinet> findAll(String token, Integer page, Integer itemPerPage)
     {
         try
         {
             UserDTO userDTO = login(null, null, token);
             if (userDTO.getResult().equals("Token is valid"))
             {
-                UserDTO userDTO1 = new UserDTO();
+                UserDTOReturnClinet userDTOReturnClinet = new UserDTOReturnClinet();
                 List<User> userList = userRepository.findAll();
                 if (page != null && itemPerPage != null)
                 {
                     List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
-                    userDTO1.setMaxPage(userList.size());
-                    userDTO1.setUserList(userListReturn);
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage((int) ((userRepository.findAll().size() / itemPerPage) + 1));
+                    info.setCurrentPage(page);
+                    info.setItemPerPage(itemPerPage);
+                    userDTOReturnClinet.setInfo(info);
+                    userDTOReturnClinet.setUserList(userListReturn);
                 }
                 else
                 {
-                    userDTO1.setMaxPage(userList.size());
-                    userDTO1.setUserList(userList);
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage(null);
+                    info.setCurrentPage(null);
+                    info.setItemPerPage(null);
+                    userDTOReturnClinet.setInfo(info);
+                    userDTOReturnClinet.setUserList(userList);
                 }
-                return new ResponseEntity<>(userDTO1, HttpStatus.OK);
+                return new ResponseEntity<>(userDTOReturnClinet, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {

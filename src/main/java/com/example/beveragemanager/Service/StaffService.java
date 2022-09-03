@@ -5,9 +5,11 @@ import com.example.beveragemanager.DTO.StaffDTO;
 import com.example.beveragemanager.DTO.UserDTO;
 import com.example.beveragemanager.Entiry.Bill;
 import com.example.beveragemanager.Entiry.Staff;
+import com.example.beveragemanager.EntityMix.HeaderReturnMix;
 import com.example.beveragemanager.Reponsitory.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,16 +31,25 @@ public class StaffService {
             if (userDTO.getResult().equals("Token is valid"))
             {
                 StaffDTO staffDTO = new StaffDTO();
-                List<Staff> staffList = staffRepository.findAll();
+
                 if (page != null && itemPerPage != null)
                 {
                     List<Staff> staffListReturn = staffRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("staffid").ascending())).getContent();
-                    staffDTO.setMaxPage(staffList.size());
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage(staffRepository.findAll(Pageable.unpaged()).getContent().size());
+                    info.setCurrentPage(page);
+                    info.setItemPerPage(itemPerPage);
+                    staffDTO.setInfo(info);
                     staffDTO.setStaffList(staffListReturn);
                 }
                 else
                 {
-                    staffDTO.setMaxPage(staffList.size());
+                    List<Staff> staffList = staffRepository.findAll();
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage(null);
+                    info.setCurrentPage(null);
+                    info.setItemPerPage(null);
+                    staffDTO.setInfo(info);
                     staffDTO.setStaffList(staffList);
                 }
                 return new ResponseEntity<>(staffDTO, HttpStatus.OK);

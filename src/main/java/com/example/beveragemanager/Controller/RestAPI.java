@@ -74,7 +74,7 @@ public class RestAPI {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<UserDTO> getUsers(@RequestParam(name = "token", required = false) String token,
+    public ResponseEntity<UserDTOReturnClinet> getUsers(@RequestParam(name = "token", required = false) String token,
                                             @RequestParam(name = "page", required = false) Integer page,
                                             @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
         Date date = new Date();

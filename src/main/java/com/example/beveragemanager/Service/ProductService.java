@@ -52,7 +52,7 @@ public class ProductService {
                             List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productprice").descending())).getContent();
                             //productDTO.setMaxPage(productList.size());
                             HeaderReturnMix info = new HeaderReturnMix();
-                            info.setMaxPage(productListReturn.size());
+                            info.setMaxPage((int) ((productRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                             info.setCurrentPage(page);
                             info.setItemPerPage(itemPerPage);
                             productDTO.setInfo(info);
@@ -87,7 +87,7 @@ public class ProductService {
                         List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending())).getContent();
                         //productDTO.setMaxPage(productList.size());
                         HeaderReturnMix info = new HeaderReturnMix();
-                        info.setMaxPage((int) ((productRepository.findAll().size() / itemPerPage) + 1));
+                        info.setMaxPage((int) ((productRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                         info.setCurrentPage(page);
                         info.setItemPerPage(itemPerPage);
                         productDTO.setInfo(info);
@@ -188,9 +188,9 @@ public class ProductService {
                             List<Product> productListReturn = productRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending())).getContent();
                             //productDTO.setMaxPage(productList.size());
                             HeaderReturnMix info = new HeaderReturnMix();
-                            info.setMaxPage((int) ((productRepository.findAll().size() / itemPerPage) + 1));
-                            info.setCurrentPage(null);
-                            info.setItemPerPage(null);
+                            info.setMaxPage((int) ((productRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                            info.setCurrentPage(page);
+                            info.setItemPerPage(itemPerPage);
                             productDTO.setInfo(info);
                             productDTO.setProductList(productListReturn);
                         }
