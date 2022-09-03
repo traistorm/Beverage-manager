@@ -43,12 +43,12 @@ public class RestAPI {
     }
 
     @GetMapping("/staffs")
-    public ResponseEntity<BillDTO> getStaffs(@RequestParam(name = "token", required = false) String token,
+    public ResponseEntity<StaffDTO> getStaffs(@RequestParam(name = "token", required = false) String token,
                                              @RequestParam(name = "page", required = false) Integer page,
                                              @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
         Date date = new Date();
         System.out.println(date.getTime());
-        return billService.findAll(token, page, itemPerPage);
+        return staffService.findAll(token, page, itemPerPage);
     }
 
     @GetMapping("/products")
