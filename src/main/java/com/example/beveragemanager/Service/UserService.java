@@ -108,6 +108,10 @@ public class UserService {
                 }
                 return new ResponseEntity<>(userDTO1, HttpStatus.OK);
             }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
             else
             {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
