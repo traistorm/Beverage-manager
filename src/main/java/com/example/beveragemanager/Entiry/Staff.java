@@ -1,6 +1,7 @@
 package com.example.beveragemanager.Entiry;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,6 +17,7 @@ public class Staff {
     private String staffname;
     private LocalDate staffdateofbirth;
     private Integer sex;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate workstarttime;
 
 }

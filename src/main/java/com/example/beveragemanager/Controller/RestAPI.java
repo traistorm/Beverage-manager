@@ -2,6 +2,7 @@ package com.example.beveragemanager.Controller;
 
 import com.example.beveragemanager.DTO.*;
 import com.example.beveragemanager.Entiry.Product;
+import com.example.beveragemanager.Entiry.Staff;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,21 @@ public class RestAPI {
         Date date = new Date();
         System.out.println(date.getTime());
         return staffService.findAll(token, page, itemPerPage);
+    }
+    @PostMapping("/staffs")
+    public ResponseEntity<StaffDTO> addStaffs(@RequestParam(name = "token", required = false) String token,
+                                              Staff staff) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return staffService.addStaff(token, staff);
+    }
+    @PutMapping("/staffs")
+    public ResponseEntity<StaffDTO> updateStaffs(@RequestParam(name = "token", required = false) String token,
+                                                 @RequestParam(name = "staffidold", required = false) String staffidold,
+                                              Staff staff) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return staffService.updateStaff(token, staff, staffidold);
     }
 
     @GetMapping("/products")
