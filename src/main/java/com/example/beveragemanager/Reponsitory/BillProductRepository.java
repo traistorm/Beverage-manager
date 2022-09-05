@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface BillProductRepository extends JpaRepository<BillProduct, Integer> {
     List<BillProduct> findAllByBillid(Integer billid);
-
+    List<BillProduct> findAllByProductid(String productID);
 }

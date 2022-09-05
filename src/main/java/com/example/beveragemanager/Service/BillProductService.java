@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,20 +75,39 @@ public class BillProductService {
 
                 return new ResponseEntity<>(billProductDTO, HttpStatus.OK);
             }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
             else
             {
+
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
         }
         catch (Exception e)
         {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
     public List<BillProduct> findAllByBillid(Integer billID)
     {
         return billProductRepository.findAllByBillid(billID);
+    }
+    public List<BillProduct> findAllByProductid(String productID)
+    {
+        return billProductRepository.findAllByProductid(productID);
+    }
+    @Transactional
+    public void deleteAll(List<BillProduct> billProductList)
+    {
+        billProductRepository.deleteAll(billProductList);
+    }
+    @Transactional
+    public void saveAll(List<BillProduct> billProductList)
+    {
+        billProductRepository.saveAll(billProductList);
     }
 }

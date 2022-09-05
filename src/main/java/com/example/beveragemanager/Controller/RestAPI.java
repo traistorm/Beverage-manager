@@ -1,8 +1,10 @@
 package com.example.beveragemanager.Controller;
 
 import com.example.beveragemanager.DTO.*;
+import com.example.beveragemanager.Entiry.Product;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +70,27 @@ public class RestAPI {
         Date date = new Date();
         System.out.println(date.getTime());
         return productService.searchProduct(token, page, itemPerPage, keyWord, minPrice, maxPrice);
+    }
+    @PostMapping("/products")
+    public ResponseEntity<Product> addProducts(@RequestParam(name = "token", required = false) String token,
+                                                  Product product) {
+
+        System.out.println(product);
+        return productService.addProduct(token, product);
+    }
+    @PutMapping("/products")
+    public ResponseEntity<Product> updateProducts(@RequestParam(name = "token", required = false) String token,
+                                               @RequestParam(name = "productidold", required = false) String productidold,
+                                               Product product) {
+
+        System.out.println(product);
+        return productService.updateProduct(token, product, productidold);
+    }
+    @DeleteMapping("/products")
+    public ResponseEntity<Product> deleteProducts(@RequestParam(name = "token", required = false) String token,
+                                                  @RequestParam(name = "productid", required = false) String productid) {
+
+        return productService.delete(token, productid);
     }
 
     @GetMapping("/users")

@@ -94,28 +94,35 @@ public class UserService {
             UserDTO userDTO = login(null, null, token);
             if (userDTO.getResult().equals("Token is valid"))
             {
-                UserDTOReturnClient userDTOReturnClient = new UserDTOReturnClient();
-                List<User> userList = userRepository.findAll();
-                if (page != null && itemPerPage != null)
+                if (userDTO.getUser().getRole().equals("admin"))
                 {
-                    List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
-                    HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage((int) ((userRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
-                    info.setCurrentPage(page);
-                    info.setItemPerPage(itemPerPage);
-                    userDTOReturnClient.setInfo(info);
-                    userDTOReturnClient.setUserList(userListReturn);
+                    UserDTOReturnClient userDTOReturnClient = new UserDTOReturnClient();
+                    List<User> userList = userRepository.findAll();
+                    if (page != null && itemPerPage != null)
+                    {
+                        List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
+                        HeaderReturnMix info = new HeaderReturnMix();
+                        info.setMaxPage((int) ((userRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                        info.setCurrentPage(page);
+                        info.setItemPerPage(itemPerPage);
+                        userDTOReturnClient.setInfo(info);
+                        userDTOReturnClient.setUserList(userListReturn);
+                    }
+                    else
+                    {
+                        HeaderReturnMix info = new HeaderReturnMix();
+                        info.setMaxPage(null);
+                        info.setCurrentPage(null);
+                        info.setItemPerPage(null);
+                        userDTOReturnClient.setInfo(info);
+                        userDTOReturnClient.setUserList(userList);
+                    }
+                    return new ResponseEntity<>(userDTOReturnClient, HttpStatus.OK);
                 }
                 else
                 {
-                    HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage(null);
-                    info.setCurrentPage(null);
-                    info.setItemPerPage(null);
-                    userDTOReturnClient.setInfo(info);
-                    userDTOReturnClient.setUserList(userList);
+                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
                 }
-                return new ResponseEntity<>(userDTOReturnClient, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {
