@@ -136,6 +136,55 @@ public class BillService {
         }
 
     }
+    public ResponseEntity<BillDTO> findBillByBillid(String token, Integer billid)
+    {
+        try
+        {
+            UserDTO userDTO = userService.login(null, null, token);
+            if (userDTO.getResult().equals("Token is valid"))
+            {
+                //System.out.println("Check");
+                BillDTO billDTO = new BillDTO();
+                Bill bill = billRepository.findByBillid(billid);
+                HeaderReturnMix info = new HeaderReturnMix();
+                //info.setMaxPage((int) ((billRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                //info.setCurrentPage(page);
+                //info.setItemPerPage(itemPerPage);
+                billDTO.setInfo(info);
+                //System.out.println(billList);
+
+                BillMix billMix = new BillMix();
+                billMix.setBill(bill);
+
+                List<BillProduct> billProductList = billProductService.findAllByBillid(bill.getBillid());
+                List<Product> productList = new ArrayList<>();
+                for (BillProduct billProduct : billProductList)
+                {
+                    productList.add(productService.findByProductid(billProduct.getProductid()));
+                }
+                billMix.setProductList(productList);
+                billMix.setDinnerTable(dinnerTableService.findByDinnertableid(bill.getDinnertableid()));
+                billDTO.getBillList().add(billMix);
+
+                return new ResponseEntity<>(billDTO, HttpStatus.OK);
+            }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+            else
+            {
+
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     List<Bill> findAll()
     {
         return billRepository.findAll();

@@ -42,6 +42,13 @@ public class RestAPI {
         System.out.println(date.getTime());
         return billService.findAll(token, page, itemPerPage);
     }
+    @GetMapping("/bills/{id}")
+    public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
+                                            @PathVariable(name = "id") Integer id) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return billService.findBillByBillid(token, id);
+    }
 
     @GetMapping("/staffs")
     public ResponseEntity<StaffDTO> getStaffs(@RequestParam(name = "token", required = false) String token,
