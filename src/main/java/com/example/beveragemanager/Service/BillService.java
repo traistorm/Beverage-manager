@@ -5,11 +5,14 @@ import com.example.beveragemanager.DTO.UserDTO;
 import com.example.beveragemanager.Entiry.Bill;
 import com.example.beveragemanager.Entiry.BillProduct;
 import com.example.beveragemanager.Entiry.Product;
+import com.example.beveragemanager.EntityMix.BillMix;
 import com.example.beveragemanager.EntityMix.BillProductTableDinner;
+import com.example.beveragemanager.EntityMix.HeaderReturnMix;
 import com.example.beveragemanager.Reponsitory.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,14 +60,21 @@ public class BillService {
                 //System.out.println("Check");
                 BillDTO billDTO = new BillDTO();
                 List<BillProduct> billProductList = new ArrayList<>();
+                billDTO.setBillList(new ArrayList<>());
                 if (page != null && itemPerPage != null)
                 {
                     List<Bill> billList = billRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending())).getContent();
-                    billDTO.setMaxPage(billList.size());
-                    System.out.println(billList);
-                    List<BillProductTableDinner> result = new ArrayList<>();
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage((int) ((billRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                    info.setCurrentPage(page);
+                    info.setItemPerPage(itemPerPage);
+                    billDTO.setInfo(info);
+                    //System.out.println(billList);
                     for (Bill bill : billList)
                     {
+                        BillMix billMix = new BillMix();
+                        billMix.setBill(bill);
+
                         BillProductTableDinner billProductTableDinner = new BillProductTableDinner();
                         billProductList = billProductService.findAllByBillid(bill.getBillid());
                         List<Product> productList = new ArrayList<>();
@@ -72,26 +82,41 @@ public class BillService {
                         {
                             productList.add(productService.findByProductid(billProduct.getProductid()));
                         }
-
-                        billProductTableDinner.setBill(bill);
-                        billProductTableDinner.setProductList(productList);
-                        billProductTableDinner.setDinnerTable(dinnerTableService.findByDinnertableid(bill.getDinnertableid()));
-                        billProductTableDinner.setStaff(staffService.findByStaffid(bill.getStaffid()));
-                        result.add(billProductTableDinner);
+                        billMix.setProductList(productList);
+                        billMix.setDinnerTable(dinnerTableService.findByDinnertableid(bill.getDinnertableid()));
+                        billDTO.getBillList().add(billMix);
                     }
-                    System.out.println(result);
-                    billDTO.setResult(result);
+                    return new ResponseEntity<>(billDTO, HttpStatus.OK);
 
                 }
                 else
                 {
-                    /*billDTO.setMaxPage(billList.size());
-                    billDTO.setBillList(billList);
-                    billDTO.setBillProductList(billProductRepository.findAll());*/
+                    List<Bill> billList = billRepository.findAll(Pageable.unpaged()).getContent();
+                    /*PageRequest.of(0, Integer.MAX_VALUE);*/ // Một cách khác lấy full giá trị
+                    HeaderReturnMix info = new HeaderReturnMix();
+                    info.setMaxPage(null);
+                    info.setCurrentPage(null);
+                    info.setItemPerPage(null);
+                    billDTO.setInfo(info);
+                    //System.out.println(billList);
+                    for (Bill bill : billList)
+                    {
+                        BillMix billMix = new BillMix();
+                        billMix.setBill(bill);
+
+                        BillProductTableDinner billProductTableDinner = new BillProductTableDinner();
+                        billProductList = billProductService.findAllByBillid(bill.getBillid());
+                        List<Product> productList = new ArrayList<>();
+                        for (BillProduct billProduct : billProductList)
+                        {
+                            productList.add(productService.findByProductid(billProduct.getProductid()));
+                        }
+                        billMix.setProductList(productList);
+                        billMix.setDinnerTable(dinnerTableService.findByDinnertableid(bill.getDinnertableid()));
+                        billDTO.getBillList().add(billMix);
+                    }
+                    return new ResponseEntity<>(billDTO, HttpStatus.OK);
                 }
-
-
-                return new ResponseEntity<>(billDTO, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {
@@ -107,7 +132,7 @@ public class BillService {
         catch (Exception e)
         {
             e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -119,9 +144,18 @@ public class BillService {
     {
         return billRepository.findAllByStaffid(staffID);
     }
+    List<Bill> findAllByDinnertableid(String staffID)
+    {
+        return billRepository.findAllByStaffid(staffID);
+    }
     @Transactional
     public void saveAll(List<Bill> billList)
     {
         billRepository.saveAll(billList);
+    }
+    @Transactional
+    public void deleteAll(List<Bill> billList)
+    {
+        billRepository.deleteAll(billList);
     }
 }

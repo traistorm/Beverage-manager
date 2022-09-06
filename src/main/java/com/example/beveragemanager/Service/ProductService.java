@@ -159,10 +159,10 @@ public class ProductService {
                     {
                         if (minPrice != null && maxPrice != null)
                         {
-                            List<Product> productListReturn = productRepository.findAllByProductnameContainingAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(keyWord, minPrice, maxPrice, PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending()));
+                            List<Product> productListReturn = productRepository.findAllByProductnameContainingIgnoreCaseAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(keyWord, minPrice, maxPrice, PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending()));
                             //productDTO.setMaxPage(productList.size());
                             HeaderReturnMix info = new HeaderReturnMix();
-                            info.setMaxPage((int) ((productRepository.findAllByProductnameContainingAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(keyWord, minPrice, maxPrice, Pageable.unpaged()).size() / itemPerPage) + 1));
+                            info.setMaxPage((int) ((productRepository.findAllByProductnameContainingIgnoreCaseAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(keyWord, minPrice, maxPrice, Pageable.unpaged()).size() / itemPerPage) + 1));
                             info.setCurrentPage(page);
                             info.setItemPerPage(itemPerPage);
                             productDTO.setInfo(info);
@@ -170,10 +170,11 @@ public class ProductService {
                         }
                         else
                         {
-                            List<Product> productListReturn = productRepository.findAllByProductnameContaining(keyWord, PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending()));
+                            List<Product> productListReturn = productRepository.findAllByProductnameContainingIgnoreCase(keyWord, PageRequest.of(page - 1, itemPerPage, Sort.by("productid").ascending()));
+                            System.out.println(productListReturn.size());
                             //productDTO.setMaxPage(productList.size());
                             HeaderReturnMix info = new HeaderReturnMix();
-                            info.setMaxPage((int) ((productRepository.findAllByProductnameContaining(keyWord, Pageable.unpaged()).size() / itemPerPage) + 1));
+                            info.setMaxPage((int) ((productRepository.findAllByProductnameContainingIgnoreCase(keyWord, Pageable.unpaged()).size() / itemPerPage) + 1));
                             info.setCurrentPage(page);
                             info.setItemPerPage(itemPerPage);
                             productDTO.setInfo(info);
@@ -320,8 +321,6 @@ public class ProductService {
                         {
                             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
                         }
-
-
                     }
                 }
                 else
@@ -370,6 +369,36 @@ public class ProductService {
                 {
                     return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
                 }
+
+            }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+            else
+            {
+
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    public ResponseEntity<ProductDTO> findProductByProductid(String token, String productID)
+    {
+        try
+        {
+            UserDTO userDTO = userService.login(null, null, token);
+            if (userDTO.getResult().equals("Token is valid"))
+            {
+                System.out.println();
+                ProductDTO productDTO = new ProductDTO();
+                productDTO.getProductList().add(productService.findByProductid(productID));
+                return new ResponseEntity<>(productDTO, HttpStatus.OK);
 
             }
             else if (userDTO.getResult().equals("Token timeout"))

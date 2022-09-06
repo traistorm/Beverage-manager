@@ -11,4 +11,5 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Bill> findAllByBillid(Integer billID);
     List<Bill> findAllByStaffid(String staffID);
     Bill findByBillid(Integer billid);
+    List<Bill> findAllByDinnertableid(String dinnerTableID);
 }

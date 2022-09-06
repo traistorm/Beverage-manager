@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
     Product findByProductid(String productID);
-    List<Product> findAllByProductnameContaining(String productName, Pageable pageable);
-    List<Product> findAllByProductnameContainingAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(String productName, Integer minRange, Integer maxRange, Pageable pageable);
+    List<Product> findAllByProductnameContainingIgnoreCase(String productName, Pageable pageable);
+    List<Product> findAllByProductnameContainingIgnoreCaseAndProductpriceGreaterThanEqualAndProductpriceLessThanEqual(String productName, Integer minRange, Integer maxRange, Pageable pageable);
     List<Product> findAllByProductpriceGreaterThanEqualAndProductpriceLessThanEqual(Integer minRange, Integer maxRange, Pageable pageable);
 }

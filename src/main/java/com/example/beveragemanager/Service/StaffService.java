@@ -1,6 +1,7 @@
 package com.example.beveragemanager.Service;
 
 import com.example.beveragemanager.DTO.BillDTO;
+import com.example.beveragemanager.DTO.ProductDTO;
 import com.example.beveragemanager.DTO.StaffDTO;
 import com.example.beveragemanager.DTO.UserDTO;
 import com.example.beveragemanager.Entiry.Bill;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.awt.*;
 import java.util.List;
 
 @Service
@@ -30,6 +32,9 @@ public class StaffService {
     @Autowired
     @Lazy
     BillService billService;
+    @Autowired
+    @Lazy
+    BillProductService billProductService;
     public ResponseEntity<StaffDTO> findAll(String token, Integer page, Integer itemPerPage)
     {
         try
@@ -133,14 +138,14 @@ public class StaffService {
                     if (staffidold.equals(staff.getStaffid()))
                     {
                         System.out.println("TEST");
-                        staffRepository.save(staff);
+                        save(staff);
                         return new ResponseEntity<>(null, HttpStatus.OK);
                     }
                     else
                     {
                         if (staffRepository.findByStaffid(staff.getStaffid()) == null)
                         {
-                            staffRepository.save(staff);
+                            save(staff);
                             List<Bill> billList = billService.findAllByStaffid(staffidold);
                             // Update staff id in bill list
                             for (Bill bill : billList)
@@ -150,8 +155,6 @@ public class StaffService {
                             billService.saveAll(billList);
                             // Delete old staff with old id
                             delete(staffRepository.findByStaffid(staffidold));
-
-
                             return new ResponseEntity<>(null, HttpStatus.OK);
                         }
                         else // new id of staff is existed
@@ -168,6 +171,76 @@ public class StaffService {
                 }
 
 
+            }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+            else
+            {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public ResponseEntity<StaffDTO> deleteStaff(String token, String staffid)
+    {
+        try
+        {
+            UserDTO userDTO = userService.login(null, null, token);
+            if (userDTO.getResult().equals("Token is valid"))
+            {
+                if (userDTO.getUser().getRole().equals("admin"))
+                {
+                    Staff staffFound = staffRepository.findByStaffid(staffid);
+                    List<Bill> billList = billService.findAllByStaffid(staffid);
+                    for (Bill bill : billList)
+                    {
+                        List<BillProduct> billProductList = billProductService.findAllByBillid(bill.getBillid());
+                        billProductService.deleteAll(billProductList);
+                    }
+                    billService.deleteAll(billList);
+                    delete(staffFound);
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+                else
+                {
+                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
+                }
+
+
+            }
+            else if (userDTO.getResult().equals("Token timeout"))
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+            else
+            {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public ResponseEntity<StaffDTO> findStaffByStaffid(String token, String staffID)
+    {
+        try
+        {
+            UserDTO userDTO = userService.login(null, null, token);
+            if (userDTO.getResult().equals("Token is valid"))
+            {
+                StaffDTO staffDTO = new StaffDTO();
+                staffDTO.getStaffList().add(staffRepository.findByStaffid(staffID));
+                return new ResponseEntity<>(staffDTO, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {

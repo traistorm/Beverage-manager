@@ -100,6 +100,7 @@ public class BillProductService {
     {
         return billProductRepository.findAllByProductid(productID);
     }
+
     @Transactional
     public void deleteAll(List<BillProduct> billProductList)
     {

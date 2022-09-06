@@ -16,4 +16,5 @@ public class BillProduct {
     private String productid;
     @Id
     private Integer billid;
+    private Integer amount;
 }

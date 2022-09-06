@@ -1,6 +1,7 @@
 package com.example.beveragemanager.Controller;
 
 import com.example.beveragemanager.DTO.*;
+import com.example.beveragemanager.Entiry.DinnerTable;
 import com.example.beveragemanager.Entiry.Product;
 import com.example.beveragemanager.Entiry.Staff;
 import com.example.beveragemanager.Service.*;
@@ -50,6 +51,13 @@ public class RestAPI {
         System.out.println(date.getTime());
         return staffService.findAll(token, page, itemPerPage);
     }
+    @GetMapping("/staffs/{id}")
+    public ResponseEntity<StaffDTO> getStaffs(@RequestParam(name = "token", required = false) String token,
+                                              @PathVariable(name = "id") String id) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return staffService.findStaffByStaffid(token, id);
+    }
     @PostMapping("/staffs")
     public ResponseEntity<StaffDTO> addStaffs(@RequestParam(name = "token", required = false) String token,
                                               Staff staff) {
@@ -65,6 +73,14 @@ public class RestAPI {
         System.out.println(date.getTime());
         return staffService.updateStaff(token, staff, staffidold);
     }
+    @DeleteMapping("/staffs/{id}")
+    public ResponseEntity<StaffDTO> deleteStaffs(@RequestParam(name = "token", required = false) String token,
+                                                 @PathVariable(name = "id") String staffid) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return staffService.deleteStaff(token, staffid);
+    }
+
 
     @GetMapping("/products")
     public ResponseEntity<ProductDTO> getProducts(@RequestParam(name = "token", required = false) String token,
@@ -74,6 +90,13 @@ public class RestAPI {
         Date date = new Date();
         System.out.println(date.getTime());
         return productService.findAll(token, page, itemPerPage, sortBy);
+    }
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductDTO> getProducts(@RequestParam(name = "token", required = false) String token,
+                                                  @PathVariable(name = "id") String id) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return productService.findProductByProductid(token, id);
     }
 
     @GetMapping("/products/search")
@@ -102,9 +125,9 @@ public class RestAPI {
         System.out.println(product);
         return productService.updateProduct(token, product, productidold);
     }
-    @DeleteMapping("/products")
+    @DeleteMapping("/products/{id}")
     public ResponseEntity<Product> deleteProducts(@RequestParam(name = "token", required = false) String token,
-                                                  @RequestParam(name = "productid", required = false) String productid) {
+                                                  @PathVariable(name = "id", required = false) String productid) {
 
         return productService.delete(token, productid);
     }
@@ -121,10 +144,39 @@ public class RestAPI {
     @GetMapping("/dinner-tables")
     public ResponseEntity<DinnerTableDTO> getDinnerTables(@RequestParam(name = "token", required = false) String token,
                                                           @RequestParam(name = "page", required = false) Integer page,
-                                                          @RequestParam(name = "v", required = false) Integer itemPerPage) {
+                                                          @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
         Date date = new Date();
         System.out.println(date.getTime());
         return dinnerTableService.findAll(token, page, itemPerPage);
+    }
+    @GetMapping("/dinner-tables/{id}")
+    public ResponseEntity<DinnerTableDTO> getDinnerTables(@RequestParam(name = "token", required = false) String token,
+                                                          @PathVariable(name = "id") String id) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return dinnerTableService.findDinnerTableByDinnertableid(token, id);
+    }
+    @PostMapping("/dinner-tables")
+    public ResponseEntity<DinnerTableDTO> addDinnerTables(@RequestParam(name = "token", required = false) String token,
+                                                          DinnerTable dinnerTable) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return dinnerTableService.addDinnerTable(token, dinnerTable);
+    }
+    @PutMapping("/dinner-tables")
+    public ResponseEntity<DinnerTableDTO> updateDinnerTables(@RequestParam(name = "token", required = false) String token,
+                                                          @RequestParam(name = "dinnertableidold", required = false) String dinnerTableIDOLD,
+                                                          DinnerTable dinnerTable) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return dinnerTableService.updateDinnerTable(token, dinnerTable, dinnerTableIDOLD);
+    }
+    @DeleteMapping("/dinner-tables/{id}")
+    public ResponseEntity<DinnerTableDTO> updateDinnerTables(@RequestParam(name = "token", required = false) String token,
+                                                             @PathVariable(name = "id") String dinnertableid) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return dinnerTableService.deleteDinnerTable(token, dinnertableid);
     }
 
     @GetMapping("/bill-products")
