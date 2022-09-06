@@ -111,4 +111,9 @@ public class BillProductService {
     {
         billProductRepository.saveAll(billProductList);
     }
+    @Transactional
+    public void save(BillProduct billProduct)
+    {
+        billProductRepository.save(billProduct);
+    }
 }

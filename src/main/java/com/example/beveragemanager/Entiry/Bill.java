@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -13,9 +14,11 @@ import java.time.LocalDate;
 @Table(name = "bill")
 public class Bill {
     @Id
+    @GeneratedValue
     private Integer billid;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate paymenttime;
     private String staffid;
     private String dinnertableid;
+    private boolean confirmed = false;
 }

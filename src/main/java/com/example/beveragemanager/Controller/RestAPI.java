@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -48,6 +50,22 @@ public class RestAPI {
         Date date = new Date();
         System.out.println(date.getTime());
         return billService.findBillByBillid(token, id);
+    }
+    @PostMapping("/bills/orders")
+    public ResponseEntity<BillDTO> orderProducts(@RequestParam(name = "token", required = false) String token,
+                                                 @RequestParam(name = "dinnertableid") String dinnertableid,
+                                                 @RequestParam(name = "staffid") String staffid,
+                                                 @RequestParam(name = "paymenttime") String paymenttime,
+                                                 @RequestParam(required = false) Map<String, String> productIDMap) {
+
+        return billService.orderProducts(token, dinnertableid, staffid, paymenttime, productIDMap);
+    }
+    @DeleteMapping("/bills")
+    public ResponseEntity<BillDTO> deleteBills(@RequestParam(name = "token", required = false) String token,
+                                            @RequestParam(name = "billid") Integer billid) {
+        Date date = new Date();
+        System.out.println(date.getTime());
+        return billService.deleteBill(token, billid);
     }
 
     @GetMapping("/staffs")
