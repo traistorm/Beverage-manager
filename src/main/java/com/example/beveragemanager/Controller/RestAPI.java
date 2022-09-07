@@ -111,7 +111,7 @@ public class RestAPI {
 
 
     @GetMapping("/products")
-    public ResponseEntity<String> getProducts(@RequestParam(name = "token", required = false) String token,
+    public ResponseEntity<ProductDTO> getProducts(@RequestParam(name = "token", required = false) String token,
                                                   @RequestParam(name = "page", required = false) Integer page,
                                                   @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage,
                                                   @RequestParam(name = "sortBy", required = false) String sortBy) {

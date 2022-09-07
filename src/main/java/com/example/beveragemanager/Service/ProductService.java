@@ -35,7 +35,7 @@ public class ProductService {
     @Autowired
     @Lazy
     ProductService productService;
-    public ResponseEntity<String> findAll(String token, Integer page, Integer itemPerPage, String sortBy)
+    public ResponseEntity<ProductDTO> findAll(String token, Integer page, Integer itemPerPage, String sortBy)
     {
         try
         {
@@ -118,7 +118,7 @@ public class ProductService {
                     productDTO.setInfo(info);
                     productDTO.setProductList(productList);
                 }
-                return new ResponseEntity<>(productDTO.toString(), HttpStatus.OK);
+                return new ResponseEntity<>(productDTO, HttpStatus.OK);
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {
@@ -132,8 +132,8 @@ public class ProductService {
         }
         catch (Exception e)
         {
-
-            return new ResponseEntity<>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
