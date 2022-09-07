@@ -4,6 +4,7 @@ import com.example.beveragemanager.DTO.*;
 import com.example.beveragemanager.Entiry.DinnerTable;
 import com.example.beveragemanager.Entiry.Product;
 import com.example.beveragemanager.Entiry.Staff;
+import com.example.beveragemanager.Reponsitory.ProductRepository;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,13 @@ public class RestAPI {
     DinnerTableService dinnerTableService;
     @Autowired
     BillProductService billProductService;
+    @Autowired
+    ProductRepository productRepository;
 
     @GetMapping("/test")
 
     public String test() {
-        return "Test success";
+        return productRepository.findAll().toString();
     }
     @GetMapping("/bills")
     public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
