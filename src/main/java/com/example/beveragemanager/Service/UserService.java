@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -26,65 +27,83 @@ public class UserService {
     UserRepository userRepository;
     public UserDTO login(String username, String password, String tokenValue)
     {
-        UserDTO userDTO = new UserDTO();
-        // Generate token
-        User user;// Return token
-        if (tokenValue != null)
+        try
         {
-            user = userRepository.findByToken(tokenValue);
-            if (user != null)
+            UserDTO userDTO = new UserDTO();
+            // Generate token
+            User user;// Return token
+            if (tokenValue != null)
             {
-                Date date = new Date();
-                if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime())
+                user = userRepository.findByToken(tokenValue);
+                if (user != null)
                 {
-                    userDTO.setUser(user);
-                    userDTO.setResult("Token is valid");
-                    //tokenService.delete(token);
-                }
-                else // Token timeout
-                {
-                    user.setToken(""); // Reset token from database
-                    userDTO.setResult("Token timeout");
-                }
-            }
-            else
-            {
-                //userDTO.setToken(token);
-                userDTO.setResult("Token is invalid");
-            }
-
-        }
-        else
-        {
-            user = userRepository.findByUsername(username);
-            if (user != null)
-            {
-                System.out.println(user.getPassword());
-                boolean valuate = BCrypt.checkpw(password, user.getPassword());
-                if (valuate)
-                {
-                    Random random = ThreadLocalRandom.current();
-                    byte[] randomBytes = new byte[32];
-                    random.nextBytes(randomBytes);
                     Date date = new Date();
-                    user.setToken(Base64.getUrlEncoder().encodeToString(randomBytes));
-                    user.setInitializationtokentime(date.getTime());
-                    userRepository.save(user);
-                    userDTO.setResult("Login success");
-                    userDTO.setUser(user);
+                    if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime())
+                    {
+                        userDTO.setUser(user);
+                        userDTO.setResult("Token is valid");
+                        //tokenService.delete(token);
+                    }
+                    else // Token timeout
+                    {
+                        user.setToken(""); // Reset token from database
+                        userDTO.setResult("Token timeout");
+                    }
                 }
                 else
                 {
-                    userDTO.setResult("Password is incorrect");
+                    //userDTO.setToken(token);
+                    userDTO.setResult("Token is invalid");
                 }
 
             }
             else
             {
-                userDTO.setResult("User not found");
+                user = userRepository.findByUsername(username);
+                if (user != null)
+                {
+                    System.out.println(user.getPassword());
+                    boolean valuate = BCrypt.checkpw(password, user.getPassword());
+                    if (valuate)
+                    {
+                        String tokenGenerate = "";
+                        do
+                        {
+                            Random random = ThreadLocalRandom.current();
+                            byte[] randomBytes = new byte[32];
+                            random.nextBytes(randomBytes);
+                            tokenGenerate = Base64.getUrlEncoder().encodeToString(randomBytes);
+                        }
+                        while (userRepository.findByToken(tokenGenerate) != null);
+
+
+                        user.setToken(tokenGenerate);
+                        Date date = new Date();
+                        user.setInitializationtokentime(date.getTime());
+                        save(user);
+                        userDTO.setResult("Login success");
+                        userDTO.setUser(user);
+                    }
+                    else
+                    {
+                        userDTO.setResult("Password is incorrect");
+                    }
+
+                }
+                else
+                {
+                    userDTO.setResult("User not found");
+                }
             }
+            return userDTO;
         }
-        return userDTO;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            UserDTO userDTO = new UserDTO();
+            userDTO.setResult("500");
+            return userDTO;
+        }
 
     }
     public ResponseEntity<UserDTOReturnClient> findAll(String token, Integer page, Integer itemPerPage)
@@ -139,5 +158,10 @@ public class UserService {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+    }
+    @Transactional
+    public void save(User user)
+    {
+        userRepository.save(user);
     }
 }

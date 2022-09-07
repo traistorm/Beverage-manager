@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BillService {
@@ -51,7 +48,7 @@ public class BillService {
     {
         return billRepository.findByBillid(billID);
     }
-    public ResponseEntity<BillDTO> findAll(String token, Integer page, Integer itemPerPage)
+    public ResponseEntity<BillDTO> findAll(String token, Integer page, Integer itemPerPage, Integer type)
     {
         try
         {
@@ -64,7 +61,28 @@ public class BillService {
                 billDTO.setBillList(new ArrayList<>());
                 if (page != null && itemPerPage != null)
                 {
-                    List<Bill> billList = billRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending())).getContent();
+                    List<Bill> billList = new ArrayList<>();
+                    if (type != null)
+                    {
+                        if (type == 0) // Lấy order
+                        {
+                            billList = billRepository.findAllByConfirmed(false, PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending()));
+                        }
+                        else if (type == 1) // Lấy bill
+                        {
+                            billList = billRepository.findAllByConfirmed(true, PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending()));
+                        }
+                        else // lất tất cả
+                        {
+                            billList = billRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending())).getContent();
+                        }
+                    }
+                    else
+                    {
+                        billList = billRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billid").ascending())).getContent();
+
+                    }
+
                     HeaderReturnMix info = new HeaderReturnMix();
                     info.setMaxPage((int) ((billRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
                     info.setCurrentPage(page);
@@ -215,32 +233,41 @@ public class BillService {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity<BillDTO> orderProducts(String token, String dinnertableid, String staffid, String paymenttime, Map<String, String> productMap)
+    public ResponseEntity<BillDTO> orderProducts(String token, String dinnertableid, String staffid, Map<String, String> productMap)
     {
         try
         {
             UserDTO userDTO = userService.login(null, null, token);
             if (userDTO.getResult().equals("Token is valid"))
             {
-                // Save a new Bill (Order)
-                Bill billNew = new Bill();
-                billNew.setDinnertableid(dinnertableid);
-                billNew.setStaffid(staffid);
-                billNew.setPaymenttime(LocalDate.parse(paymenttime));
-                billNew.setConfirmed(false);
-                billNew = save(billNew);
+                if (userDTO.getUser().getRole().equals("user"))
+                {
+                    // Save a new Bill (Order)
+                    Bill billNew = new Bill();
+                    Date date = new Date();
+                    billNew.setDinnertableid(dinnertableid);
+                    billNew.setStaffid(staffid);
+                    billNew.setPaymenttime(date.getTime());
+                    billNew.setConfirmed(false);
+                    billNew = save(billNew);
 
-                int productIndex = 0;
-                while (productMap.get("product" + productIndex + "id") != null && productMap.get("product" + productIndex + "amount") != null) {
-                    BillProduct billProductNew = new BillProduct();
-                    billProductNew.setBillid(billNew.getBillid());
-                    billProductNew.setProductid(productMap.get("product" + productIndex + "id"));
-                    billProductNew.setAmount(Integer.parseInt(productMap.get("product" + productIndex + "amount")));
-                    productIndex++;
-                    billProductService.save(billProductNew);
+                    int productIndex = 0;
+                    while (productMap.get("product" + productIndex + "id") != null && productMap.get("product" + productIndex + "amount") != null) {
+                        BillProduct billProductNew = new BillProduct();
+                        billProductNew.setBillid(billNew.getBillid());
+                        billProductNew.setProductid(productMap.get("product" + productIndex + "id"));
+                        billProductNew.setAmount(Integer.parseInt(productMap.get("product" + productIndex + "amount")));
+                        productIndex++;
+                        billProductService.save(billProductNew);
 
+                    }
+                    return new ResponseEntity<>(null, HttpStatus.OK);
                 }
-                return new ResponseEntity<>(null, HttpStatus.OK);
+                else
+                {
+                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
+                }
+
             }
             else if (userDTO.getResult().equals("Token timeout"))
             {

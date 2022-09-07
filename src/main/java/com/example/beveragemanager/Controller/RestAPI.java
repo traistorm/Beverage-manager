@@ -4,6 +4,7 @@ import com.example.beveragemanager.DTO.*;
 import com.example.beveragemanager.Entiry.DinnerTable;
 import com.example.beveragemanager.Entiry.Product;
 import com.example.beveragemanager.Entiry.Staff;
+import com.example.beveragemanager.Entiry.User;
 import com.example.beveragemanager.Reponsitory.ProductRepository;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,33 @@ public class RestAPI {
     public String test() {
         return productRepository.findAll().toString();
     }
+    @PostMapping("login")
+    public ResponseEntity<User> login(@RequestParam(name = "username", required = false) String username,
+                                      @RequestParam(name = "password", required = false) String password,
+                                      @RequestParam(name = "token", required = false) String token)
+    {
+        UserDTO userDTO = userService.login(username, password, token);
+        if (userDTO.getResult().equals("Token is valid") || userDTO.getResult().equals("Login success"))
+        {
+            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.OK);
+        }
+        else if (!userDTO.getResult().equals("500"))
+        {
+            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.UNAUTHORIZED);
+        }
+        else
+        {
+            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/bills")
     public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
                                             @RequestParam(name = "page", required = false) Integer page,
-                                            @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage) {
+                                            @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage,
+                                            @RequestParam(name = "type", required = false) Integer type) {
         Date date = new Date();
         System.out.println(date.getTime());
-        return billService.findAll(token, page, itemPerPage);
+        return billService.findAll(token, page, itemPerPage, type);
     }
     @GetMapping("/bills/{id}")
     public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
@@ -58,10 +79,9 @@ public class RestAPI {
     public ResponseEntity<BillDTO> orderProducts(@RequestParam(name = "token", required = false) String token,
                                                  @RequestParam(name = "dinnertableid") String dinnertableid,
                                                  @RequestParam(name = "staffid") String staffid,
-                                                 @RequestParam(name = "paymenttime") String paymenttime,
                                                  @RequestParam(required = false) Map<String, String> productIDMap) {
 
-        return billService.orderProducts(token, dinnertableid, staffid, paymenttime, productIDMap);
+        return billService.orderProducts(token, dinnertableid, staffid, productIDMap);
     }
     @DeleteMapping("/bills")
     public ResponseEntity<BillDTO> deleteBills(@RequestParam(name = "token", required = false) String token,

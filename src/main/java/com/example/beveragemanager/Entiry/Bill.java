@@ -16,8 +16,7 @@ public class Bill {
     @Id
     @GeneratedValue
     private Integer billid;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate paymenttime;
+    private Long paymenttime;
     private String staffid;
     private String dinnertableid;
     private boolean confirmed = false;

@@ -17,4 +17,5 @@ public class User {
     private String role;
     private String token;
     private Long initializationtokentime;
+    private String dinnertableid;
 }
