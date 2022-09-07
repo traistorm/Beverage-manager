@@ -80,7 +80,6 @@ public class RestAPI {
                                                  @RequestParam(name = "dinnertableid") String dinnertableid,
                                                  @RequestParam(name = "staffid") String staffid,
                                                  @RequestParam(required = false) Map<String, String> productIDMap) {
-
         return billService.orderProducts(token, dinnertableid, staffid, productIDMap);
     }
     @DeleteMapping("/bills")
