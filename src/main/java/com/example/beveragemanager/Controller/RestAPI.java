@@ -41,22 +41,22 @@ public class RestAPI {
         return productRepository.findAll().toString();
     }
     @PostMapping("login")
-    public ResponseEntity<User> login(@RequestParam(name = "username", required = false) String username,
+    public ResponseEntity<String> login(@RequestParam(name = "username", required = false) String username,
                                       @RequestParam(name = "password", required = false) String password,
                                       @RequestParam(name = "token", required = false) String token)
     {
         UserDTO userDTO = userService.login(username, password, token);
         if (userDTO.getResult().equals("Token is valid") || userDTO.getResult().equals("Login success"))
         {
-            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.OK);
+            return new ResponseEntity<>(userDTO.getResult(), HttpStatus.OK);
         }
         else if (!userDTO.getResult().equals("500"))
         {
-            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(userDTO.getResult(), HttpStatus.UNAUTHORIZED);
         }
         else
         {
-            return new ResponseEntity<>(userDTO.getUser(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(userDTO.getResult(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("/bills")
