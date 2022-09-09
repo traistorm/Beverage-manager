@@ -35,7 +35,7 @@ public class UserService {
             if (tokenValue != null)
             {
                 user = userRepository.findByToken(tokenValue);
-                if (user != null && user.getToken().equals(""))
+                if (user != null && !user.getToken().equals(""))
                 {
                     Date date = new Date();
                     if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime())
