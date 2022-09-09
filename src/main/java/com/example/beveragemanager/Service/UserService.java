@@ -35,7 +35,7 @@ public class UserService {
             if (tokenValue != null)
             {
                 user = userRepository.findByToken(tokenValue);
-                if (user != null)
+                if (user != null && user.getToken().equals(""))
                 {
                     Date date = new Date();
                     if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime())
@@ -158,6 +158,28 @@ public class UserService {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+    }
+    public ResponseEntity<UserDTO> logout(String token)
+    {
+        try
+        {
+            User user = userRepository.findByToken(token);
+            if (user != null)
+            {
+                user.setToken("");
+                save(user);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            }
+            else
+            {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @Transactional
     public void save(User user)

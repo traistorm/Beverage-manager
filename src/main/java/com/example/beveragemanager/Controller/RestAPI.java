@@ -59,6 +59,11 @@ public class RestAPI {
             return new ResponseEntity<>(userDTO.getUser(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("logout")
+    public ResponseEntity<UserDTO> logout(@RequestParam(value = "token") String token)
+    {
+        return userService.logout(token);
+    }
     @GetMapping("/bills")
     public ResponseEntity<BillDTO> getBills(@RequestParam(name = "token", required = false) String token,
                                             @RequestParam(name = "page", required = false) Integer page,
