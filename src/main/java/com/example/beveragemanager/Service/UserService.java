@@ -66,7 +66,7 @@ public class UserService {
                     boolean valuate = BCrypt.checkpw(password, user.getPassword());
                     if (valuate)
                     {
-                        String tokenGenerate = "";
+                        /*String tokenGenerate = "";
                         do
                         {
                             Random random = ThreadLocalRandom.current();
@@ -80,7 +80,7 @@ public class UserService {
                         user.setToken(tokenGenerate);
                         Date date = new Date();
                         user.setInitializationtokentime(date.getTime());
-                        save(user);
+                        save(user);*/
                         userDTO.setResult("Login success");
                         userDTO.setUser(user);
                     }
