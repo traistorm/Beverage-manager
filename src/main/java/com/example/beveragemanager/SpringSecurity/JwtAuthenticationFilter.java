@@ -30,8 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("TestDoFilter");
             // Lấy jwt từ request
             String jwt = request.getHeader("Authorization");
-
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, request, response)) {
+            System.out.println(StringUtils.hasText(jwt));
+            if (jwt == null)
+            {
+                System.out.println("Check");
+            }
+            if (tokenProvider.validateToken(jwt, request, response)) {
                 // Lấy id user từ chuỗi jwt
                 Long userId = tokenProvider.getUserIdFromJWT(jwt);
                 // Lấy thông tin người dùng từ id
