@@ -35,241 +35,127 @@ public class StaffService {
     @Autowired
     @Lazy
     BillProductService billProductService;
-    public ResponseEntity<StaffDTO> findAll(String token, Integer page, Integer itemPerPage)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                StaffDTO staffDTO = new StaffDTO();
 
-                if (page != null && itemPerPage != null)
-                {
-                    List<Staff> staffListReturn = staffRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("staffid").ascending())).getContent();
-                    HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage((int) ((staffRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
-                    info.setCurrentPage(page);
-                    info.setItemPerPage(itemPerPage);
-                    staffDTO.setInfo(info);
-                    staffDTO.setStaffList(staffListReturn);
-                }
-                else
-                {
-                    List<Staff> staffList = staffRepository.findAll();
-                    HeaderReturnMix info = new HeaderReturnMix();
-                    info.setMaxPage(null);
-                    info.setCurrentPage(null);
-                    info.setItemPerPage(null);
-                    staffDTO.setInfo(info);
-                    staffDTO.setStaffList(staffList);
-                }
-                return new ResponseEntity<>(staffDTO, HttpStatus.OK);
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
+    public ResponseEntity<StaffDTO> findAll(String token, Integer page, Integer itemPerPage) {
+        try {
+            StaffDTO staffDTO = new StaffDTO();
 
-        }
-        catch (Exception e)
-        {
+            if (page != null && itemPerPage != null) {
+                List<Staff> staffListReturn = staffRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("staffid").ascending())).getContent();
+                HeaderReturnMix info = new HeaderReturnMix();
+                info.setMaxPage((int) ((staffRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                info.setCurrentPage(page);
+                info.setItemPerPage(itemPerPage);
+                staffDTO.setInfo(info);
+                staffDTO.setStaffList(staffListReturn);
+            } else {
+                List<Staff> staffList = staffRepository.findAll();
+                HeaderReturnMix info = new HeaderReturnMix();
+                info.setMaxPage(null);
+                info.setCurrentPage(null);
+                info.setItemPerPage(null);
+                staffDTO.setInfo(info);
+                staffDTO.setStaffList(staffList);
+            }
+            return new ResponseEntity<>(staffDTO, HttpStatus.OK);
+
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
     }
+
     @Transactional
-    public ResponseEntity<StaffDTO> addStaff(String token, Staff staff)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                if (userDTO.getUser().getRole().equals("admin"))
-                {
-                    Staff staffFound = staffRepository.findByStaffid(staff.getStaffid());
-                    if (staffFound == null)
-                    {
-                        System.out.println("Check");
-                        save(staff);
-                        return new ResponseEntity<>(null, HttpStatus.OK);
-                    }
-                    else
-                    {
-                        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-                    }
-                }
-                else
-                {
-                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
-                }
+    public ResponseEntity<StaffDTO> addStaff(String token, Staff staff) {
+        try {
 
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
+            Staff staffFound = staffRepository.findByStaffid(staff.getStaffid());
+            if (staffFound == null) {
+                System.out.println("Check");
+                save(staff);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
-
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity<StaffDTO> updateStaff(String token, Staff staff, String staffidold)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                if (userDTO.getUser().getRole().equals("admin"))
-                {
-                    if (staffidold.equals(staff.getStaffid()))
-                    {
-                        System.out.println("TEST");
-                        save(staff);
-                        return new ResponseEntity<>(null, HttpStatus.OK);
+
+    public ResponseEntity<StaffDTO> updateStaff(String token, Staff staff, String staffidold) {
+        try {
+
+            if (staffidold.equals(staff.getStaffid())) {
+                System.out.println("TEST");
+                save(staff);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } else {
+                if (staffRepository.findByStaffid(staff.getStaffid()) == null) {
+                    save(staff);
+                    List<Bill> billList = billService.findAllByStaffid(staffidold);
+                    // Update staff id in bill list
+                    for (Bill bill : billList) {
+                        bill.setStaffid(staff.getStaffid());
                     }
-                    else
-                    {
-                        if (staffRepository.findByStaffid(staff.getStaffid()) == null)
-                        {
-                            save(staff);
-                            List<Bill> billList = billService.findAllByStaffid(staffidold);
-                            // Update staff id in bill list
-                            for (Bill bill : billList)
-                            {
-                                bill.setStaffid(staff.getStaffid());
-                            }
-                            billService.saveAll(billList);
-                            // Delete old staff with old id
-                            delete(staffRepository.findByStaffid(staffidold));
-                            return new ResponseEntity<>(null, HttpStatus.OK);
-                        }
-                        else // new id of staff is existed
-                        {
-                            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-                        }
-
-
-                    }
-                }
-                else
-                {
-                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
-                }
-
-
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    public ResponseEntity<StaffDTO> deleteStaff(String token, String staffid)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                if (userDTO.getUser().getRole().equals("admin"))
-                {
-                    Staff staffFound = staffRepository.findByStaffid(staffid);
-                    List<Bill> billList = billService.findAllByStaffid(staffid);
-                    for (Bill bill : billList)
-                    {
-                        List<BillProduct> billProductList = billProductService.findAllByBillid(bill.getBillid());
-                        billProductService.deleteAll(billProductList);
-                    }
-                    billService.deleteAll(billList);
-                    delete(staffFound);
+                    billService.saveAll(billList);
+                    // Delete old staff with old id
+                    delete(staffRepository.findByStaffid(staffidold));
                     return new ResponseEntity<>(null, HttpStatus.OK);
-                }
-                else
+                } else // new id of staff is existed
                 {
-                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
                 }
 
 
             }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity<StaffDTO> findStaffByStaffid(String token, String staffID)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                StaffDTO staffDTO = new StaffDTO();
-                staffDTO.getStaffList().add(staffRepository.findByStaffid(staffID));
-                return new ResponseEntity<>(staffDTO, HttpStatus.OK);
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
 
-        }
-        catch (Exception e)
-        {
+    public ResponseEntity<StaffDTO> deleteStaff(String token, String staffid) {
+        try {
+
+            Staff staffFound = staffRepository.findByStaffid(staffid);
+            List<Bill> billList = billService.findAllByStaffid(staffid);
+            for (Bill bill : billList) {
+                List<BillProduct> billProductList = billProductService.findAllByBillid(bill.getBillid());
+                billProductService.deleteAll(billProductList);
+            }
+            billService.deleteAll(billList);
+            delete(staffFound);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public Staff findByStaffid(String staffID)
-    {
+
+    public ResponseEntity<StaffDTO> findStaffByStaffid(String token, String staffID) {
+        try {
+
+            StaffDTO staffDTO = new StaffDTO();
+            staffDTO.getStaffList().add(staffRepository.findByStaffid(staffID));
+            return new ResponseEntity<>(staffDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public Staff findByStaffid(String staffID) {
         return staffRepository.findByStaffid(staffID);
     }
+
     @Transactional
-    public void save(Staff staff)
-    {
+    public void save(Staff staff) {
         staffRepository.save(staff);
     }
+
     @Transactional
-    public void delete(Staff staff)
-    {
+    public void delete(Staff staff) {
         staffRepository.delete(staff);
     }
 }

@@ -31,89 +31,66 @@ public class BillProductService {
     @Autowired
     @Lazy
     ProductService productService;
-    public ResponseEntity<BillProductDTO> findAll(String token, Integer page, Integer itemPerPage)
-    {
-        try
-        {
-            UserDTO userDTO = userService.login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                BillProductDTO billProductDTO = new BillProductDTO();
-                List<BillProduct> billProductList = billProductRepository.findAll();
-                List<Bill> billList = new ArrayList<>();
-                List<Product> productList = new ArrayList<>();
-                if (page != null && itemPerPage != null)
-                {
-                    List<BillProduct> billProductListReturn = billProductRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billproductid").ascending())).getContent();
-                    billProductDTO.setMaxPage(billProductList.size());
-                    billProductDTO.setBillProductList(billProductListReturn);
-                    for (BillProduct billProduct : billProductListReturn)
-                    {
 
-                        Bill bill = billService.findByBillid(billProduct.getBillid());
-                        if (!billList.contains(bill))
-                        {
-                            billList.add(bill);
-                        }
-                        Product product = productService.findByProductid(billProduct.getProductid());
-                        if (!productList.contains(product))
-                        {
-                            productList.add(product);
-                        }
+    public ResponseEntity<BillProductDTO> findAll(String token, Integer page, Integer itemPerPage) {
+        try {
+
+            BillProductDTO billProductDTO = new BillProductDTO();
+            List<BillProduct> billProductList = billProductRepository.findAll();
+            List<Bill> billList = new ArrayList<>();
+            List<Product> productList = new ArrayList<>();
+            if (page != null && itemPerPage != null) {
+                List<BillProduct> billProductListReturn = billProductRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("billproductid").ascending())).getContent();
+                billProductDTO.setMaxPage(billProductList.size());
+                billProductDTO.setBillProductList(billProductListReturn);
+                for (BillProduct billProduct : billProductListReturn) {
+
+                    Bill bill = billService.findByBillid(billProduct.getBillid());
+                    if (!billList.contains(bill)) {
+                        billList.add(bill);
                     }
-                    billProductDTO.setBillList(billList);
-                    billProductDTO.setProductList(productList);
+                    Product product = productService.findByProductid(billProduct.getProductid());
+                    if (!productList.contains(product)) {
+                        productList.add(product);
+                    }
                 }
-                else
-                {
-                    billProductDTO.setMaxPage(billProductList.size());
-                    billProductDTO.setBillList(billService.findAll());
-                    billProductDTO.setProductList(productService.findAll());
-                    billProductDTO.setBillProductList(billProductRepository.findAll());
-                }
-
-
-                return new ResponseEntity<>(billProductDTO, HttpStatus.OK);
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                billProductDTO.setBillList(billList);
+                billProductDTO.setProductList(productList);
+            } else {
+                billProductDTO.setMaxPage(billProductList.size());
+                billProductDTO.setBillList(billService.findAll());
+                billProductDTO.setProductList(productService.findAll());
+                billProductDTO.setBillProductList(billProductRepository.findAll());
             }
 
-        }
-        catch (Exception e)
-        {
+
+            return new ResponseEntity<>(billProductDTO, HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
-    public List<BillProduct> findAllByBillid(Integer billID)
-    {
+
+    public List<BillProduct> findAllByBillid(Integer billID) {
         return billProductRepository.findAllByBillid(billID);
     }
-    public List<BillProduct> findAllByProductid(String productID)
-    {
+
+    public List<BillProduct> findAllByProductid(String productID) {
         return billProductRepository.findAllByProductid(productID);
     }
 
     @Transactional
-    public void deleteAll(List<BillProduct> billProductList)
-    {
+    public void deleteAll(List<BillProduct> billProductList) {
         billProductRepository.deleteAll(billProductList);
     }
+
     @Transactional
-    public void saveAll(List<BillProduct> billProductList)
-    {
+    public void saveAll(List<BillProduct> billProductList) {
         billProductRepository.saveAll(billProductList);
     }
+
     @Transactional
-    public void save(BillProduct billProduct)
-    {
+    public void save(BillProduct billProduct) {
         billProductRepository.save(billProduct);
     }
 }

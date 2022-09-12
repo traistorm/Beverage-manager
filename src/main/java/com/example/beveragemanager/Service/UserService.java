@@ -25,47 +25,34 @@ import java.util.concurrent.ThreadLocalRandom;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    public UserDTO login(String username, String password, String tokenValue)
-    {
-        try
-        {
+
+    public UserDTO login(String username, String password, String tokenValue) {
+        try {
             UserDTO userDTO = new UserDTO();
             // Generate token
             User user;// Return token
-            if (tokenValue != null)
-            {
+            if (tokenValue != null) {
                 user = userRepository.findByToken(tokenValue);
-                if (user != null && !user.getToken().equals(""))
-                {
+                if (user != null && !user.getToken().equals("")) {
                     Date date = new Date();
-                    if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime())
-                    {
+                    if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime()) {
                         userDTO.setUser(user);
                         userDTO.setResult("Token is valid");
                         //tokenService.delete(token);
-                    }
-                    else // Token timeout
+                    } else // Token timeout
                     {
                         user.setToken(""); // Reset token from database
                         userDTO.setResult("Token timeout");
                     }
                 }
-                else
-                {
-                    //userDTO.setToken(token);
-                    userDTO.setResult("Token is invalid");
-                }
 
-            }
-            else
-            {
+
+            } else {
                 user = userRepository.findByUsername(username);
-                if (user != null)
-                {
+                if (user != null) {
                     System.out.println(user.getPassword());
                     boolean valuate = BCrypt.checkpw(password, user.getPassword());
-                    if (valuate)
-                    {
+                    if (valuate) {
                         /*String tokenGenerate = "";
                         do
                         {
@@ -83,22 +70,16 @@ public class UserService {
                         save(user);*/
                         userDTO.setResult("Login success");
                         userDTO.setUser(user);
-                    }
-                    else
-                    {
+                    } else {
                         userDTO.setResult("Password is incorrect");
                     }
 
-                }
-                else
-                {
+                } else {
                     userDTO.setResult("User not found");
                 }
             }
             return userDTO;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             UserDTO userDTO = new UserDTO();
             userDTO.setResult("500");
@@ -106,84 +87,64 @@ public class UserService {
         }
 
     }
-    public ResponseEntity<UserDTOReturnClient> findAll(String token, Integer page, Integer itemPerPage)
-    {
-        try
-        {
-            UserDTO userDTO = login(null, null, token);
-            if (userDTO.getResult().equals("Token is valid"))
-            {
-                if (userDTO.getUser().getRole().equals("admin"))
-                {
-                    UserDTOReturnClient userDTOReturnClient = new UserDTOReturnClient();
-                    List<User> userList = userRepository.findAll();
-                    if (page != null && itemPerPage != null)
-                    {
-                        List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
-                        HeaderReturnMix info = new HeaderReturnMix();
-                        info.setMaxPage((int) ((userRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
-                        info.setCurrentPage(page);
-                        info.setItemPerPage(itemPerPage);
-                        userDTOReturnClient.setInfo(info);
-                        userDTOReturnClient.setUserList(userListReturn);
-                    }
-                    else
-                    {
-                        HeaderReturnMix info = new HeaderReturnMix();
-                        info.setMaxPage(null);
-                        info.setCurrentPage(null);
-                        info.setItemPerPage(null);
-                        userDTOReturnClient.setInfo(info);
-                        userDTOReturnClient.setUserList(userList);
-                    }
-                    return new ResponseEntity<>(userDTOReturnClient, HttpStatus.OK);
-                }
-                else
-                {
-                    return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
-                }
-            }
-            else if (userDTO.getResult().equals("Token timeout"))
-            {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            }
-            else
-            {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
 
-        }
-        catch (Exception e)
-        {
+    public ResponseEntity<UserDTOReturnClient> findAll(String token, Integer page, Integer itemPerPage) {
+        try {
+            UserDTO userDTO = login(null, null, token);
+
+            UserDTOReturnClient userDTOReturnClient = new UserDTOReturnClient();
+            List<User> userList = userRepository.findAll();
+            if (page != null && itemPerPage != null) {
+                List<User> userListReturn = userRepository.findAll(PageRequest.of(page - 1, itemPerPage, Sort.by("userid").ascending())).getContent();
+                HeaderReturnMix info = new HeaderReturnMix();
+                info.setMaxPage((int) ((userRepository.findAll(Pageable.unpaged()).getContent().size() / itemPerPage) + 1));
+                info.setCurrentPage(page);
+                info.setItemPerPage(itemPerPage);
+                userDTOReturnClient.setInfo(info);
+                userDTOReturnClient.setUserList(userListReturn);
+            } else {
+                HeaderReturnMix info = new HeaderReturnMix();
+                info.setMaxPage(null);
+                info.setCurrentPage(null);
+                info.setItemPerPage(null);
+                userDTOReturnClient.setInfo(info);
+                userDTOReturnClient.setUserList(userList);
+            }
+            return new ResponseEntity<>(userDTOReturnClient, HttpStatus.OK);
+
+
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
     }
-    public ResponseEntity<UserDTO> logout(String token)
-    {
-        try
-        {
+
+    public ResponseEntity<UserDTO> logout(String token) {
+        try {
             User user = userRepository.findByToken(token);
-            if (user != null)
-            {
+            if (user != null) {
                 user.setToken("");
                 save(user);
                 return new ResponseEntity<>(null, HttpStatus.OK);
-            }
-            else
-            {
+            } else {
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public User findById(Integer userID) {
+        return userRepository.findByUserid(userID);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     @Transactional
-    public void save(User user)
-    {
+    public void save(User user) {
         userRepository.save(user);
     }
 }

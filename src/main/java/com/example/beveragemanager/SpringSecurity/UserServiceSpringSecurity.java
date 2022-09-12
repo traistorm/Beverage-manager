@@ -1,0 +1,37 @@
+package com.example.beveragemanager.SpringSecurity;
+
+import com.example.beveragemanager.Entiry.User;
+import com.example.beveragemanager.Reponsitory.UserRepository;
+import com.example.beveragemanager.Service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserServiceSpringSecurity implements UserDetailsService {
+
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        //System.out.println("Test");
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            System.out.println("NULL");
+            throw new UsernameNotFoundException(username);
+        }
+        return new CustomUserDetails(user);
+    }
+    public UserDetails loadUserById(Integer userID) {
+        //System.out.println("Test");
+        User user = userService.findById(userID);
+        if (user == null) {
+            throw new UsernameNotFoundException(userID.toString());
+        }
+        return new CustomUserDetails(user);
+    }
+
+}
