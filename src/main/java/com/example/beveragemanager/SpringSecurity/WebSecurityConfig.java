@@ -2,6 +2,7 @@ package com.example.beveragemanager.SpringSecurity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -50,14 +51,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll(); //Permits your preflight request
         http
 
                 .authorizeRequests()
                 .antMatchers("/api/v1/login").permitAll() // Cho phép tất cả mọi người truy cập vào địa chỉ này
                 .anyRequest().authenticated() // Tất cả các request khác đều cần phải xác thực mới được truy cập
                 .and().httpBasic().and().csrf().disable();
-        // Thêm một lớp Filter kiểm tra jwt
 
+        // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Thêm một lớp filter
         http
                 .sessionManagement()

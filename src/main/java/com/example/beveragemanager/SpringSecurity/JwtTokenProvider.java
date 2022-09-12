@@ -16,7 +16,7 @@ public class JwtTokenProvider {
     private final String JWT_SECRET = "traistorm";
 
     //Thời gian có hiệu lực của chuỗi jwt
-    private final long JWT_EXPIRATION = 2 * 60 * 60 * 1000;
+    private final long JWT_EXPIRATION = 60 * 60 * 3 * 1000;
 
     // Tạo ra jwt từ thông tin user
     public String generateToken(CustomUserDetails userDetails) {
@@ -51,17 +51,21 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(authToken).getBody();;
             return true;
         } catch (MalformedJwtException ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid JWT token");
+            System.out.println("Check");
             log.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Expired JWT token"); // Đoạn code này sẽ trả về ngay lập tức
+
             log.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Unsupported JWT token");
+
             log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"JWT claims string is empty.");
+
             log.error("JWT claims string is empty.");
+        }
+        catch (SignatureException ex) {
+
+            log.error("JWT signature does not match locally computed signature");
         }
         return false;
     }

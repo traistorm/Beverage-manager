@@ -2,6 +2,7 @@ package com.example.beveragemanager.SpringSecurity;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,6 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             else
             {
+                //response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"JWT claims string is empty.");
                 //response.sendError(HttpServletResponse.SC_BAD_GATEWAY,"Invalid Login details"); // Đoạn code này sẽ trả về ngay lập tức
                 //SecurityContextHolder.getContext().setAuthentication(null);
                 System.out.println("Check else");
