@@ -70,7 +70,7 @@ public class RestAPI {
         }
     }*/
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam(name = "username", required = false) String username,
+    public ResponseEntity<LoginDTO> login(@RequestParam(name = "username", required = false) String username,
                                       @RequestParam(name = "password", required = false) String password)
     {
 
@@ -81,13 +81,17 @@ public class RestAPI {
                 )
         );
         System.out.println(username + password);
+
+        LoginDTO loginDTO = new LoginDTO();
         // Nếu không xảy ra exception tức là thông tin hợp lệ
         // Set thông tin authentication vào Security Context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        //SecurityContextHolder.getContext().setAuthentication(authentication);
         // Trả về jwt cho người dùng.
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-        return new ResponseEntity<>(jwt,HttpStatus.OK);
+        loginDTO.setToken(jwt);
+        loginDTO.setUsername(((CustomUserDetails) authentication.getPrincipal()).getUsername());
+        loginDTO.setRole(((CustomUserDetails) authentication.getPrincipal()).getAuthorities().toString());
+        return new ResponseEntity<>(loginDTO,HttpStatus.OK);
     }
     @PostMapping("/login-test")
     public ResponseEntity<String> loginTest()
