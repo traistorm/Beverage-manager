@@ -33,7 +33,7 @@ public class UserService {
             User user;// Return token
             if (tokenValue != null) {
                 user = userRepository.findByToken(tokenValue);
-                if (user != null && !user.getToken().equals("")) {
+                /*if (user != null && !user.getToken().equals("")) {
                     Date date = new Date();
                     if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime()) {
                         userDTO.setUser(user);
@@ -44,7 +44,7 @@ public class UserService {
                         user.setToken(""); // Reset token from database
                         userDTO.setResult("Token timeout");
                     }
-                }
+                }*/
 
 
             } else {
@@ -123,7 +123,7 @@ public class UserService {
         try {
             User user = userRepository.findByToken(token);
             if (user != null) {
-                user.setToken("");
+                //user.setToken("");
                 save(user);
                 return new ResponseEntity<>(null, HttpStatus.OK);
             } else {
