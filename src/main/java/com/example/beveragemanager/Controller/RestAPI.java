@@ -96,9 +96,18 @@ public class RestAPI {
         //SecurityContextHolder.getContext().setAuthentication(authentication);
         // Trả về jwt cho người dùng.
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+
+        User user = userService.findByUsername(((CustomUserDetails) authentication.getPrincipal()).getUsername());
+
         loginDTO.setToken(jwt);
         loginDTO.setUsername(((CustomUserDetails) authentication.getPrincipal()).getUsername());
         loginDTO.setRole(((CustomUserDetails) authentication.getPrincipal()).getAuthorities().toString());
+        DinnerTable dinnerTable = user.getDinnerTable();
+        DinnerTable dinnerTable1 = new DinnerTable();
+        dinnerTable1.setDinnertableid(dinnerTable.getDinnertableid());
+        dinnerTable1.setDinnertablename(dinnerTable.getDinnertablename());
+        loginDTO.setDinnerTable(dinnerTable1);
+        //System.out.println(dinnerTable);
         return new ResponseEntity<>(loginDTO,HttpStatus.OK);
     }
     @PostMapping("/login-test")
