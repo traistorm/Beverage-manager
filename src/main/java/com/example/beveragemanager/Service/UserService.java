@@ -32,7 +32,7 @@ public class UserService {
             // Generate token
             User user;// Return token
             if (tokenValue != null) {
-                user = userRepository.findByToken(tokenValue);
+                //user = userRepository.findByToken(tokenValue);
                 /*if (user != null && !user.getToken().equals("")) {
                     Date date = new Date();
                     if ((user.getInitializationtokentime() + 60L * 60 * 1000 * 24 * 365) > date.getTime()) {
@@ -121,7 +121,7 @@ public class UserService {
 
     public ResponseEntity<UserDTO> logout(String token) {
         try {
-            User user = userRepository.findByToken(token);
+            User user = null;
             if (user != null) {
                 //user.setToken("");
                 save(user);
