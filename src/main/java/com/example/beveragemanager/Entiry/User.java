@@ -13,8 +13,8 @@ public class User {
     private String username;
     private String password;
     private String role;
-    private String token;
-    private Long initializationtokentime;
+    //private String token;
+    //private Long initializationtokentime;
     private String dinnertableid;
 
     @OneToOne // Đánh dấu có mỗi quan hệ 1-1 với Person ở phía dưới
