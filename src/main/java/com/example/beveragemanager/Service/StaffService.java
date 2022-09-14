@@ -96,7 +96,7 @@ public class StaffService {
                     List<Bill> billList = billService.findAllByStaffid(staffidold);
                     // Update staff id in bill list
                     for (Bill bill : billList) {
-                        bill.setStaffid(staff.getStaffid());
+                        //bill.setStaffid(staff.getStaffid());
                     }
                     billService.saveAll(billList);
                     // Delete old staff with old id

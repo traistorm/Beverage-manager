@@ -1,10 +1,12 @@
 package com.example.beveragemanager.Entiry;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,4 +20,10 @@ public class Product {
     private Float discount; // %
     private String description;
     private String imagelink;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL) // Quan hệ 1-n với đối tượng ở dưới (Person) (1 địa điểm có nhiều người ở)
+    // MapopedBy trỏ tới tên biến Address ở trong Person.
+    @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
+    @ToString.Exclude // Khoonhg sử dụng trong toString()
+    private List<BillProduct> billProducts;
 }

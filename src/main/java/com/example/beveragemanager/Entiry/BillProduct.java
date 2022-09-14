@@ -1,11 +1,10 @@
 package com.example.beveragemanager.Entiry;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -17,4 +16,16 @@ public class BillProduct {
     @Id
     private Integer billid;
     private Integer amount;
+
+    @ManyToOne
+    @JoinColumn(name = "billid", insertable = false, updatable = false) // thông qua khóa ngoại
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Bill bill;
+
+    @ManyToOne
+    @JoinColumn(name = "productid", insertable = false, updatable = false) // thông qua khóa ngoại
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Product product;
 }

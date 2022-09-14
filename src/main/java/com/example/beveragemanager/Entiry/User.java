@@ -2,10 +2,7 @@ package com.example.beveragemanager.Entiry;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -19,4 +16,8 @@ public class User {
     private String token;
     private Long initializationtokentime;
     private String dinnertableid;
+
+    @OneToOne // Đánh dấu có mỗi quan hệ 1-1 với Person ở phía dưới
+    @JoinColumn(name = "dinnertableid", insertable = false, updatable = false) // Liên kết với nhau qua khóa ngoại person_id
+    private DinnerTable dinnerTable;
 }

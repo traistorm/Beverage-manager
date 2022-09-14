@@ -1,12 +1,10 @@
 package com.example.beveragemanager.Controller;
 
+import com.example.beveragemanager.Entiry.*;
+import com.example.beveragemanager.Reponsitory.*;
 import com.example.beveragemanager.SpringSecurity.CustomUserDetails;
 import com.example.beveragemanager.SpringSecurity.JwtTokenProvider;
 import com.example.beveragemanager.DTO.*;
-import com.example.beveragemanager.Entiry.DinnerTable;
-import com.example.beveragemanager.Entiry.Product;
-import com.example.beveragemanager.Entiry.Staff;
-import com.example.beveragemanager.Reponsitory.ProductRepository;
 import com.example.beveragemanager.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.Map;
+import javax.transaction.Transactional;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -43,12 +41,22 @@ public class RestAPI {
     AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenProvider tokenProvider;
-
-
+    @Autowired
+    StaffRepository staffRepository;
+    @Autowired
+    BillRepository billRepository;
+    @Autowired
+    DinnerTableReponsitory dinnerTableReponsitory;
+    @Autowired
+    UserRepository userRepository;
     @GetMapping("/test")
-
+    @Transactional
     public String test() {
-        return productRepository.findAll().toString();
+        Bill bill = new Bill();
+        bill.setDinnerTable(dinnerTableReponsitory.findByDinnertableid("5"));
+        billRepository.save(bill);
+
+        return productRepository.findByProductid("1").getBillProducts().toString();
     }
     /*@PostMapping("login")
     public ResponseEntity<User> login(@RequestParam(name = "username", required = false) String username,

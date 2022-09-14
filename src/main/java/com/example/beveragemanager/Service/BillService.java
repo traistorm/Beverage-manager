@@ -175,9 +175,9 @@ public class BillService {
             Bill billNew = new Bill();
             Date date = new Date();
             billNew.setDinnertableid(dinnertableid);
-            billNew.setStaffid(staffid);
+            //billNew.setStaffid(staffid);
             billNew.setPaymenttime(date.getTime());
-            billNew.setConfirmed(false);
+            billNew.setConfirmed(0);
             billNew = save(billNew);
 
             int productIndex = 0;
