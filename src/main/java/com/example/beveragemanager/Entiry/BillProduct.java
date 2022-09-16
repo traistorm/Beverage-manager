@@ -1,5 +1,6 @@
 package com.example.beveragemanager.Entiry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,12 +18,14 @@ public class BillProduct {
     private Integer billid;
     private Integer amount;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "billid", insertable = false, updatable = false) // thông qua khóa ngoại
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Bill bill;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "productid", insertable = false, updatable = false) // thông qua khóa ngoại
     @EqualsAndHashCode.Exclude

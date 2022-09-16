@@ -25,12 +25,14 @@ public class Bill {
     private String dinnertableid;
     private String staffid;
     private Integer confirmed = 0;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="staffid", insertable = false, updatable = false)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Staff staff;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Quan hệ 1-n với đối tượng ở dưới (Person) (1 địa điểm có nhiều người ở)
     // MapopedBy trỏ tới tên biến Address ở trong Person.
     @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode

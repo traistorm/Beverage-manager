@@ -1,5 +1,6 @@
 package com.example.beveragemanager.Entiry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -22,6 +23,7 @@ public class Staff {
     private Integer sex;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate workstarttime;
+    @JsonIgnore
     @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true) // Quan hệ 1-n với đối tượng ở dưới (Person) (1 địa điểm có nhiều người ở)
     // MapopedBy trỏ tới tên biến Address ở trong Person.
     @EqualsAndHashCode.Exclude // không sử dụng trường này trong equals và hashcode
