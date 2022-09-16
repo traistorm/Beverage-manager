@@ -170,7 +170,7 @@ public class BillService {
         }
     }
 
-    public ResponseEntity<BillDTO> orderProducts(String token, String dinnertableid, String staffid, Map<String, String> productMap) {
+    public ResponseEntity<BillDTO> orderProducts(String productID, String productAmount, String dinnertableid) {
         try {
             Bill billNew = new Bill();
             Date date = new Date();
@@ -180,7 +180,7 @@ public class BillService {
             billNew.setConfirmed(0);
             billNew = save(billNew);
 
-            int productIndex = 0;
+            /*int productIndex = 0;
             while (productMap.get("product" + productIndex + "id") != null && productMap.get("product" + productIndex + "amount") != null) {
                 BillProduct billProductNew = new BillProduct();
                 billProductNew.setBillid(billNew.getBillid());
@@ -189,6 +189,16 @@ public class BillService {
                 productIndex++;
                 billProductService.save(billProductNew);
 
+            }*/
+            String[] productIDList = productID.split("-");
+            String[] productAmountList = productAmount.split("-");
+            for (int i = 0; i < productIDList.length; i++)
+            {
+                BillProduct billProductNew = new BillProduct();
+                billProductNew.setBillid(billNew.getBillid());
+                billProductNew.setProductid(productIDList[i]);
+                billProductNew.setAmount(Integer.parseInt(productAmountList[i]));
+                billProductService.save(billProductNew);
             }
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {

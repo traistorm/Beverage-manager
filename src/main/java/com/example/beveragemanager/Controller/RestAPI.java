@@ -151,13 +151,14 @@ public class RestAPI {
         System.out.println(date.getTime());
         return billService.findBillByBillid(token, id);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/bills/orders")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PostMapping("/bills-orders")
     public ResponseEntity<BillDTO> orderProducts(@RequestParam(name = "token", required = false) String token,
-                                                 @RequestParam(name = "dinnertableid") String dinnertableid,
-                                                 @RequestParam(name = "staffid", required = false) String staffid,
-                                                 @RequestParam(required = false) Map<String, String> productIDMap) {
-        return billService.orderProducts(token, dinnertableid, staffid, productIDMap);
+                                                 @RequestParam(name = "productid") String productID,
+                                                 @RequestParam(name = "productamount", required = false) String productAmount,
+                                                 @RequestParam(name = "dinnertableid", required = false) String dinnertableid) {
+        System.out.println("Test");
+        return billService.orderProducts(productID, productAmount, dinnertableid);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/bills")
@@ -216,6 +217,7 @@ public class RestAPI {
                                                   @RequestParam(name = "page", required = false) Integer page,
                                                   @RequestParam(name = "itemPerPage", required = false) Integer itemPerPage,
                                                   @RequestParam(name = "sortBy", required = false) String sortBy) {
+        System.out.println("ABCD");
         Date date = new Date();
         System.out.println(date.getTime());
         return productService.findAll(page, itemPerPage, sortBy);
