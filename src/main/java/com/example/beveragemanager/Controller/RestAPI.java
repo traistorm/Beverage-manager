@@ -155,7 +155,7 @@ public class RestAPI {
     @PostMapping("/bills/orders")
     public ResponseEntity<BillDTO> orderProducts(@RequestParam(name = "token", required = false) String token,
                                                  @RequestParam(name = "dinnertableid") String dinnertableid,
-                                                 @RequestParam(name = "staffid") String staffid,
+                                                 @RequestParam(name = "staffid", required = false) String staffid,
                                                  @RequestParam(required = false) Map<String, String> productIDMap) {
         return billService.orderProducts(token, dinnertableid, staffid, productIDMap);
     }
